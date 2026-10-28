@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learner Health & Illness Information Form</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .form-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    h2 { margin-top: 0; color: #2c3e50; text-align: center; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; }
+    input[type="text"], input[type="date"] {
+      width: 100%; padding: 10px; border: 1px solid #ccc;
+      border-radius: 6px; box-sizing: border-box; font-size: 14px;
+    }
+    input:focus { border-color: #3498db; outline: none; }
+    button {
+      width: 100%; background-color: #27ae60; color: white;
+      padding: 12px; border: none; border-radius: 6px;
+      font-size: 16px; font-weight: bold; cursor: pointer;
+    }
+    button:hover { background-color: #219150; }
+    #status { margin-top: 15px; text-align: center; font-weight: bold; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Learner Health & Illness Form</h2>
+    <form id="healthForm">
+      <div class="form-group">
+        <label for="learnerName">Name of Learner</label>
+        <input type="text" id="learnerName" name="learnerName" required>
+      </div>
+      <div class="form-group">
+        <label for="gradeLevel">Grade Level</label>
+        <input type="text" id="gradeLevel" name="gradeLevel" placeholder="e.g., Grade 5" required>
+      </div>
+      <div class="form-group">
+        <label for="section">Section</label>
+        <input type="text" id="section" name="section" placeholder="e.g., Section A" required>
+      </div>
+      <div class="form-group">
+        <label for="dateGotSick">Date Got Sick</label>
+        <input type="date" id="dateGotSick" name="dateGotSick" required>
+      </div>
+      <div class="form-group">
+        <label for="illness">Illness / Symptoms</label>
+        <input type="text" id="illness" name="illness" placeholder="e.g., Fever, Cough" required>
+      </div>
+      <div class="form-group">
+        <label for="monthWeek">Date (Month / Week)</label>
+        <input type="text" id="monthWeek" name="monthWeek" placeholder="e.g., October - Week 2" required>
+      </div>
+      <button type="submit" id="submitBtn">Submit Report</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwwYIBYW0CiaQgMK7N8MdhJ4J_PoNGbLvTte1ZctyFZ-Ot43Ul00-OherCyjd0rGKDK/exec'; // <-- Paste your Web App URL here
+    const form = document.getElementById('healthForm');
+    const btn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('status');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.innerText = "Submitting...";
+      statusDiv.className = "";
+      statusDiv.innerText = "";
+
+      const formData = {
+        learnerName: document.getElementById('learnerName').value,
+        gradeLevel: document.getElementById('gradeLevel').value,
+        section: document.getElementById('section').value,
+        dateGotSick: document.getElementById('dateGotSick').value,
+        illness: document.getElementById('illness').value,
+        monthWeek: document.getElementById('monthWeek').value
+      };
+
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors', // Prevents browser CORS restriction errors
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      .then(() => {
+        statusDiv.className = "success";
+        statusDiv.innerText = "Health record submitted successfully!";
+        form.reset();
+        btn.disabled = false;
+        btn.innerText = "Submit Report";
+      })
+      .catch(error => {
+        statusDiv.className = "error";
+        statusDiv.innerText = "Error! Please try again.";
+        btn.disabled = false;
+        btn.innerText = "Submit Report";
+      });
+    });
+  </script>
+</body>
+</html>
