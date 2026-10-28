@@ -24,11 +24,19 @@
     h2 { margin-top: 0; color: #2c3e50; text-align: center; }
     .form-group { margin-bottom: 18px; }
     label { display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; }
-    input[type="text"], input[type="date"] {
+    input[type="text"], input[type="date"], select {
       width: 100%; padding: 10px; border: 1px solid #ccc;
       border-radius: 6px; box-sizing: border-box; font-size: 14px;
+      background-color: #fff;
     }
-    input:focus { border-color: #3498db; outline: none; }
+    input:focus, select:focus { border-color: #3498db; outline: none; }
+    .row-group {
+      display: flex;
+      gap: 10px;
+    }
+    .row-group .form-group {
+      flex: 1;
+    }
     button {
       width: 100%; background-color: #27ae60; color: white;
       padding: 12px; border: none; border-radius: 6px;
@@ -45,37 +53,84 @@
   <div class="form-container">
     <h2>Learner Health & Illness Form</h2>
     <form id="healthForm">
+      
       <div class="form-group">
         <label for="learnerName">Name of Learner</label>
-        <input type="text" id="learnerName" name="learnerName" required>
+        <input type="text" id="learnerName" name="learnerName" placeholder="Full Name" required>
       </div>
+
+      <!-- Grade Level Dropdown (Kinder to Grade 7) -->
       <div class="form-group">
-        <label for="gradeLevel">Grade Level</label>
-        <input type="text" id="gradeLevel" name="gradeLevel" placeholder="e.g., Grade 5" required>
+        <label for="gradeLevelSelect">Grade Level</label>
+        <select id="gradeLevelSelect" required>
+          <option value="" disabled selected>Select Grade Level</option>
+          <option value="Kinder">Kinder</option>
+          <option value="Grade 1">Grade 1</option>
+          <option value="Grade 2">Grade 2</option>
+          <option value="Grade 3">Grade 3</option>
+          <option value="Grade 4">Grade 4</option>
+          <option value="Grade 5">Grade 5</option>
+          <option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option>
+        </select>
       </div>
+
       <div class="form-group">
         <label for="section">Section</label>
         <input type="text" id="section" name="section" placeholder="e.g., Section A" required>
       </div>
+
       <div class="form-group">
         <label for="dateGotSick">Date Got Sick</label>
         <input type="date" id="dateGotSick" name="dateGotSick" required>
       </div>
+
       <div class="form-group">
         <label for="illness">Illness / Symptoms</label>
         <input type="text" id="illness" name="illness" placeholder="e.g., Fever, Cough" required>
       </div>
-      <div class="form-group">
-        <label for="monthWeek">Date (Month / Week)</label>
-        <input type="text" id="monthWeek" name="monthWeek" placeholder="e.g., October - Week 2" required>
+
+      <!-- Month and Week Dropdowns -->
+      <div class="row-group">
+        <div class="form-group">
+          <label for="monthSelect">Month</label>
+          <select id="monthSelect" required>
+            <option value="" disabled selected>Select Month</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="weekSelect">Week</label>
+          <select id="weekSelect" required>
+            <option value="" disabled selected>Select Week</option>
+            <option value="Week 1">Week 1</option>
+            <option value="Week 2">Week 2</option>
+            <option value="Week 3">Week 3</option>
+            <option value="Week 4">Week 4</option>
+            <option value="Week 5">Week 5</option>
+          </select>
+        </div>
       </div>
+
       <button type="submit" id="submitBtn">Submit Report</button>
     </form>
     <div id="status"></div>
   </div>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwwYIBYW0CiaQgMK7N8MdhJ4J_PoNGbLvTte1ZctyFZ-Ot43Ul00-OherCyjd0rGKDK/exec'; // <-- Paste your Web App URL here
+    const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // <-- Remember to replace with your Apps Script Web App URL!
     const form = document.getElementById('healthForm');
     const btn = document.getElementById('submitBtn');
     const statusDiv = document.getElementById('status');
@@ -87,18 +142,22 @@
       statusDiv.className = "";
       statusDiv.innerText = "";
 
+      const selectedMonth = document.getElementById('monthSelect').value;
+      const selectedWeek = document.getElementById('weekSelect').value;
+      const combinedMonthWeek = selectedMonth + " - " + selectedWeek;
+
       const formData = {
         learnerName: document.getElementById('learnerName').value,
-        gradeLevel: document.getElementById('gradeLevel').value,
+        gradeLevel: document.getElementById('gradeLevelSelect').value,
         section: document.getElementById('section').value,
         dateGotSick: document.getElementById('dateGotSick').value,
         illness: document.getElementById('illness').value,
-        monthWeek: document.getElementById('monthWeek').value
+        monthWeek: combinedMonthWeek
       };
 
       fetch(scriptURL, {
         method: 'POST',
-        mode: 'no-cors', // Prevents browser CORS restriction errors
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       })
